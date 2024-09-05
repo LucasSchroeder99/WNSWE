@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>WNSWE</title>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <script src="main.js" type="module"></script>
+  </head>
+  <body>
+    <div class="header">
+      <div class="button_box"><div class="button unselectable" id="start_import_button">Import</div></div>
+      <div class="button_box"><div class="button unselectable" id="export_button">Export</div></div>
+      <div class="button_box"><div class="button unselectable" id="play_pause_button">Start</div></div>
+      <div class="button_box"><div class="button unselectable" id="reset_button" disabled>Reset</div></div>
+      <div class="slider_box">
+        <input id="sim_speed_input" type="range" min="0" max="50" list="sim_speed_middle" style="margin-top:5px;"></input>
+        <datalist id="sim_speed_middle">
+          <option value="25"></option>
+        </datalist>
+        <div class="label_container">
+        <label for="sim_speed_input" id="sim_speed_output">1&times;</label>
+        </div>
+      </div>
+      <div class="button_box"><div class="button unselectable" id="classes_button" disabled>Classes</div></div>
+      <div class="button_box"><div class="button unselectable" id="log_button" disabled>Global Log</div></div>
+      <div class="button_box"><div class="button unselectable" id="help_button" disabled>Help</div></div>
+      <div class="button_box"><div class="button unselectable" id="about_button" disabled>About</div></div>
+    </div>
+    <div class="netsim_container">
+      <div class="canvas_container" id="canvas_container">
+        <canvas id="netsim_view"></canvas>
+        <div id="sim_time_output" class="rr-block">0.00s</div>
+      </div>
+      <div class="sidebar" id="sidebar">
+        <div id="sidebar_node" style="display:none;">
+          <input id="node_name_input" class="node_name"></input>
+          <br/>
+          <br/>
+          <div class="text" id="node_details" style="display:none;">Details be here</div>
+          <div class="table_div">
+            <table>
+              <tr>
+                <td>UUID:</td>
+                <td id="node_details_uuid">5762aca3-7388-4ee3-b60e-aa48809d2c04</td>
+              </tr>
+              <tr>
+                <td>Sent:</td>
+                <td id="node_details_sent">0</td>
+              </tr>
+              <tr>
+                <td>Received:</td>
+                <td id="node_details_received">0</td>
+              </tr>
+              <tr>
+                <td>Buffered:</td>
+                <td id="node_details_buffered">0</td>
+              </tr>
+            </table>
+          </div>
+          <div id="node_edit_warning" class="admon warning" style="display:none;"><span class="admon_title">Warning</span><div class="admon_content">Simulation is running, changes will only apply after resetting the simulation!</div></div>
+          <div>
+            <h3>Node Class</h3>
+            <select id="class_selection" class="class_select"></select>
+            </br>
+            <div class="button_bar">
+              <div class="button unselectable" id="edit_class_button">Edit Class</div>
+            </div>
+            </br>
+          </div>
+          <div>
+            <h3>Node-specific Code</h3>
+            <div id="code_window_node"></div>
+            <div id="node_code_error_warning" class="admon warning" style="display:none;"><span id="node_code_error_warning_title" class="admon_title">Warning</span><div class="admon_content" id="node_code_error_warning_text"></div></div>
+          </div>
+          <div>
+            <h3>Output Log</h3>
+            <pre id="output_log"></pre>
+          </div>
+        </div>
+        <div id="sidebar_message" style="display:none;">
+          <div class="headline" id="message_title">Message</div>
+          <div class="text" id="message_details" style="display:none;">Details be here</div>
+          <div class="table_div">
+            <table>
+              <tr>
+                <td>Sender:</td>
+                <td id="message_details_sender">a85d69c6-6244-4726-9dc8-bc96da0cbf7e</td>
+              </tr>
+              <tr>
+                <td>Receiver:</td>
+                <td id="message_details_receiver">5762aca3-7388-4ee3-b60e-aa48809d2c04</td>
+              </tr>
+              <tr>
+                <td>Sent at:</td>
+                <td id="message_details_timestamp">0s</td>
+              </tr>
+            </table>
+          </div>
+          <div id="code_window_message"></div>
+        </div>
+        <div id="sidebar_connection" style="display:none;">
+          <div class="headline" id="connection_title">Connection</div>
+          <label for="input_connection_length" class="text">Edge-Weight: </label>
+          <input type="number" value="10" min="1" max="9999" id="input_connection_length"></input>
+        </div>
+        <div id="sidebar_global_log" style="display:none;">
+          <div class="headline">Global Log</div>
+          <pre id="global_log"></pre>
+        </div>
+        <div id="sidebar_none" style="display:block;">
+          <h1 class="headline">Overview</h1>
+          <p>In the header, click 'Start' to start the simulation, then click 'Pause' to pause it. Use the slider to change the simulation speed. Clicking 'Reset' stops the simulation and reloads Python code.</p>
+          <p>Click the 'Classes' button in the header to view and edit the code of shared classes for nodes and messages. Click a node to view and edit it's configuration and node-specific code.</p>
+          <p>Click 'Global Log' in the header to view the output of all nodes together.</p>
+          <p>Click 'Help' in the header to get a more detailed and in-depth explanation and documentation of the available Python code.</p>
+        </div>
+      </div>
+    </div>
+    <div id="context_menu">
+      <div id="context_menu_node" style="display:none;">
+        <div class="button unselectable" id="context_menu_node_edit_button">Edit</div>
+        <div class="button unselectable" id="context_menu_node_connect_button">Connect To</div>
+        <div class="button unselectable" id="context_menu_node_duplicate_button">Duplicate</div>
+        <div id="context_menu_node_multiple">
+          <div class="button unselectable" id="context_menu_node_fully_connect_button">Fully Connect</div>
+        </div>
+        <div class="button unselectable" id="context_menu_node_delete_button">Delete</div>
+      </div>
+      <div id="context_menu_message" style="display:none;">
+        <div class="button unselectable" id="context_menu_message_edit_button">Edit</div>
+        <div class="button unselectable" id="context_menu_message_delete_button">Delete</div>
+      </div>
+      <div id="context_menu_connection" style="display:none;">
+        <div class="button unselectable" id="context_menu_connction_edit_button">Edit</div>
+        <div class="button unselectable" id="context_menu_connction_insert_node_button">Insert Node</div>
+        <div class="button unselectable" id="context_menu_connction_delete_button">Delete</div>
+      </div>
+      <div id="context_menu_nothing" style="display:none;">
+        <div class="button unselectable" id="context_menu_nothing_add_node_button">Add Node</div>
+        <div class="button unselectable" id="context_menu_nothing_add_node_button_red">Add Node (Red)</div>
+        <div class="button unselectable" id="context_menu_nothing_add_node_button_green">Add Node (Green)</div>
+        <div class="button unselectable" id="context_menu_nothing_add_node_button_blue">Add Node (Blue)</div>
+        <div class="button unselectable" id="context_menu_nothing_add_node_button_orange">Add Node (Orange)</div>
+        <div class="button unselectable" id="context_menu_nothing_reset_view_button">Reset View</div>
+      </div>
+    </div>
+    <div id="modal_container" class="modal">
+      <div class="modal_content">
+        <span id="modal_close_button">&times;</span>
+        <div id="modal_import">
+          <h1>Import</h1>
+          <div id="drop_area">
+            <div class="center">
+              <p>Drop files here!</p>
+              <input type="file" id="import_file_input"></input>
+            </div>
+          </div>
+          <div class="button_bar">
+            <div class="button unselectable confirm_button" id="import_button">Import</div>
+          </div>
+        </div>
+        <div id="modal_class">
+          <h1>Class Code</h1>
+          <select id="modal_class_selection" class="class_select"></select>
+          <div class="button_bar">
+            <div class="button unselectable wide" id="add_node_class_button">Add Node-Class</div>
+            <div class="button unselectable wide" id="add_message_class_button">Add Message-Class</div>
+            <div class="button unselectable" id="delete_class_button">Delete Class</div>
+          </div>
+          <br/>
+          <br/>
+          <div id="modal_class_code_edit_warning" class="admon warning" style="display:none;"><span class="admon_title">Warning</span><div class="admon_content">Simulation is running, changes will only apply after resetting the simulation!</div></div>
+          <br/>
+          <div id="modal_code_window_class"></div>
+          <div id="modal_class_code_error_warning" class="admon warning" style="display:none;"><span id="modal_class_code_error_warning_title" class="admon_title">Warning</span><div class="admon_content" id="modal_class_code_error_warning_text"></div></div>
+        </div>
+        <div id="modal_about">
+          <h1>About WNSWE</h1>
+          <p>WNSWE is a purely client-side tool for simulating abstract networks of communicating nodes.</p>
+          <p>Created by Lucas Schröder</p>
+          <h2>Credits</h2>
+          <p>WNSWE uses the following external libraries:</p>
+          <ul>
+          <li><a href="https://pyodide.org/">Pyodide</a></li>
+          <li><a href="https://codemirror.net/">CodeMirror</a></li>
+          <li><a href="https://github.com/josdejong/jsoneditor">JSONEditor</a></li>
+          <li><a href="https://split.js.org/">Split.js</a></li>
+          </ul>
+        </div>
+        <div id="modal_help">
+          <h1>Overview</h1>
+          <p>The Simulator can be used to allow nodes of an undirected, weighted graph to execute Python code and to send and receive messages from each other.</p>
+          <p>Every node is an object of a specific Python class and can call methods of that class. Additionally, each node has its own run method, that is called at the start of the simulation to control the behavior of the node.</p>
+          <p>Messages between nodes contain JSON data, that can be viewed and modified while the simulation is running. When sending a message from Python, a dictionary has to be passed, which then is serialized into the message JSON. Thus, it may only contain other dictionaries, lists, strings, numbers or booleans.</p>
+          <p>When the simulatior has just been started, it will be inactive. By clicking on the Start button in the header, the simulation can be started and then paused and resumed with the corresponding button. While the simulation is active (running or paused), changes from the Python code of classes or run methods do not become active. For that, the simulation has to be reset by clicking on the Reset button in the header, and after that it has to be started again.</p>
+          <h1>Interface</h1>
+          <h2>Header</h2>
+          <p>The header contains multiple controls to control the simulator:</p>
+          <ul>
+          <li>Import: Clicking this button opens a dialog, from which an existing scenario file can be selected and imported from a corresponding .json file. The file can be chosen through the file selection dialog, or by using drag-and-drop. Clicking on the Import button within the dialog will then import the selected scenario file</li>
+          <li>Export: This will save the current scenario (nodes, connections and Python code) into a .json file</li>
+          <li>Start/Pause/Continue:<ul>
+          <li>Start: Starts the simulation and reloads changes in the code</li>
+          <li>Pause: Pauses the simulation</li>
+          <li>Continue: Resumes the simulation after pausing</li>
+          </ul>
+          </li>
+          <li>Reset: Stops the Simulation and resets the rimulator, also loads changes in the code</li>
+          <li>Speed slider: Changes the speed of the simulation</li>
+          <li>Classes: Opens a modal with the code of Python classes for viewing and editing</li>
+          <li>Global Log: Opens the global log, which contains the aggregated output of all nodes</li>
+          <li>Help: Opens this help dialog</li>
+          <li>About: Shows the About information</li>
+          </ul>
+          <h2>Simulation Area</h2>
+          <p>This area visually shows the state of the simulated network</p>
+          <h3>Navigation</h3>
+          <p>By clicking and dragging with the left mouse butten the view can be moved around. Scrolling with the mouse wheel allows for zooming.</p>
+          <p>By clicking with right mouse button a context menu can be opened, which also contains an option to reset the view.</p>
+          <h3>Simulation Time</h3>
+          <p>In the top left corner of the simulation area the current time since the start of the simulation is shown.</p>
+          <h3>Selection</h3>
+          <p>Clicking with the left mouse button allows the selection of nodes, connections or messages. By holding the Ctrl key, multiple elements of the same kind can be selected together.</p>
+          <p>Details of the currently selected elements are shown in the sidebar. Changes to these elements can also be made there.</p>
+          <h3>Editing the graph</h3>
+          <p>By clicking with the right mouse button, a context menu can be opened. Depending on where the menu is opened, different options are available:</p>
+          <ul>
+          <li>Nodes:<ul>
+          <li>Edit: Opens the node for editing in the sidebar</li>
+          <li>Connect To: Allows to connect the node with other nodes</li>
+          <li>Duplicate: Creates a copy of the mode</li>
+          <li>Fully Connect: When multiple nodes are selected, they can be fully connected with each other</li>
+          <li>Delete: Deletes the node and all its connections</li>
+          </ul>
+          </li>
+          <li>Connections:<ul>
+          <li>Edit: Opens the connection for editing in the sidebar</li>
+          <li>Insert Node: Splits the connection and inserts a node at that place.</li>
+          <li>Delete: Deletes the connection and all messages on it.</li>
+          </ul>
+          </li>
+          <li>Message:<ul>
+          <li>Edit: Opens the message for editing in the sidebar</li>
+          <li>Delete: Deletes the message</li>
+          </ul>
+          </li>
+          <li>Anywhere else:<ul>
+          <li>Add Node: Adds a new node, optionally with the given Color</li>
+          </ul>
+          </li>
+          </ul>
+          <p>Selected Nodes can be clicked and dragged with the left mouse button to change their position.</p>
+          <h2>Sidebar</h2>
+          <p>The sidebar shows various information depending on the current selection:</p>
+          <ul>
+          <li>Node:<ul>
+          <li>Name of the node</li>
+          <li>Information of the node</li>
+          <li>Selected Python class of the node</li>
+          <li>Run method of the node</li>
+          <li>Output from the node</li>
+          </ul>
+          </li>
+          <li>Connection<ul>
+          <li>edge weight of the connection</li>
+          </ul>
+          </li>
+          <li>Message<ul>
+          <li>Sender and receiver UUID</li>
+          <li>Time, at which the message was sent</li>
+          <li>JSON data of the message</li>
+          </ul>
+          </li>
+          <li>Global Log<ul>
+          <li>Aggregated output of all nodes</li>
+          </ul>
+          </li>
+          </ul>
+          <h1>Python Documentation</h1>
+          <p>Python classes for nodes must inherit from the Endpoint class. This class contains the methods required for sending and receiving of messages, as well as additional Attributes. Every node has its own run method, which controls the behavior of that node. If this is not desired, i.e. if every node of the same class should act the same (for instance a hub or switch), then an infinitely looped method can be definied within the class and be called from the run method. Configuration of nodes (e.g. addresses) can also be done via this run method.</p>
+          <p>In order for the simulation to continue running at the same time as the nodes are executing their code, asynchronous methods are used. These methods are not defined with <code>def</code> as usual, but wihth <code>async def</code> instead. Additionally, these methods can not be called directly via <code>self.method()</code>, but instead have to becalled with <code>await self.method()</code>. Asynchronous methods can only be called from other asynchronous methods, though they may also call synchronous methods if desired.</p>
+          <h2>Endpoint</h2>
+          <p>The Endpoint class provides all methods that a node requires in order to send or receive messages.</p>
+          <h3>Asynchronous Methods</h3>
+          <p>Asynchronous methods can only be called from other asynchronous methods. Additionally, they must be called with <code>await self.method()</code>, as otherwise they are not execute.</p>
+          <h4><code>async receive(self, timeout=-1)</code></h4>
+          <p>With <code>msg, adr = await self.recieve()</code> it is possible for a node to receive a message. The methods waits until a message has been receives. It returns a message object and the UUID of the sender.</p>
+          <p>With timeout a time can be specified, which determines how long the method waits for a messagee. If the timeout is less than 0, it will wait until a message is received. If the timeout is greater or equal to 0, then it waits until either a message arrives or the time is up. If a message arrives, the function returns normally. If the time runs out, a <code>TimeoutError</code> exception will be thrown.</p>
+          <h5><code>Message</code> Object</h5>
+          <p><code>Message</code> Objects contain the information of a recieved message within attributes.</p>
+          <ul>
+          <li><code>data</code>: the contents of the message</li>
+          <li><code>color</code>: the color of the message</li>
+          <li><code>sent_timestampt</code>: the time, at which the message was sent.</li>
+          </ul>
+          <h4><code>async send(self, uuid, data, message_class=Message)</code></h4>
+          <p>With <code>await self.send(adr, data)</code> a message can be send to a neighboring node, identified by its UUID. The UUID of the receiver can be determined when a message has been received from that node, or through <code>self.get_neighbors()</code> If the node is not connected with the receiver node, a <code>ConnectionError</code> exception will be thrown.</p>
+          <p>The data that that should be sent must be JSON serializable, i.e. it must be dictionary, list, string, number or boolean, and it can only contain this kind of data.</p>
+          <p>With the <code>message_class</code> parameter, a class or instance of a class can be passed, from which the class of the message will be derived. This allows to specify and use specific kinds of messages, which can have different colors or speeds.</p>
+          <h4><code>async broadcast(self, data, exclude=[], message_class=Message)</code></h4>
+          <p>With <code>await self.broadcast(data)</code> a message can be sent to all neighbors of a node. Internally, this method calls the <code>send()</code> method for each neighbor. With <code>exclude</code>, a list of neighbor UUIDs can be passed, which will not be included in the broadcast. This can be used for instance if a Hub broadcasts a message to everyone except the original sender.</p>
+          <h3>Synchronous Methods</h3>
+          <p>Synchronous methods are called with <code>self.method()</code> like usual, even from within an asynchronous method.</p>
+          <h4><code>print(self, *objects, sep=" ", end="\n", file=None, flush=False</code>)</h4>
+          <p>With <code>self.print("text")</code>, text can be printed. The text will appear both in the output of the node itself, and in the global log. The normal <code>print()</code> should not be used, since it will only output to the browser console.</p>
+          <h4><code>get_neighbors(self)</code></h4>
+          <p>With <code>neighbors = self.get_neighbors()</code> a list of the UUIDs of the currently neighboring nodes can be retrieved.</p>
+          <h3>Attributes</h3>
+          <p>Attributes of the Endpoint class can read or written to.</p>
+          <h4><code>color</code></h4>
+          <p>This contains the current color of the node. With <code>self.color = Color.Red</code>, the color can be changed while the simulation is running. The color may either be:</p>
+          <ul>
+          <li>a string containing the CSS name of a color (e.g. <code>"white"</code> or <code>"lightgoldenrodeyellow"</code>)</li>
+          <li>a string containing the hexadezimal RGB value of the color (e.g. <code>"#aaffaa"</code>)</li>
+          <li>one of the predefined colors from the <code>Color</code> enum (e.g. <code>Color.Red</code> or <code>Color.LightBlue</code>)</li>
+          </ul>
+          <h4><code>display_name</code></h4>
+          <p>This attribute contains the current name of the node. With <code>self.display_name = "Name"</code>, the name of the node can be changed while the simulation is running.</p>
+          <h3>Read-only Attribues</h3>
+          <p>These Attributes may only be read, but not changed.</p>
+          <h4><code>_uuid</code></h4>
+          <p>Contains the uuid of a node.</p>
+          <h3><code>BaseMessage</code></h3>
+          <p>Messages make use of a class for storing the meta data of the Message. Color and speed of the message are taken from this class. Messages classes must inherit from the BaseMessage class. In the <code>__init__()</code> method the color and speed may be specified via <code>self.color</code> and <code>self.speed</code>, respectively.</p>
+          <ul>
+          <li><code>color</code> The color of a message. May contain the same values as the color of a node:<ul>
+          <li>a string containing the CSS name of a color (e.g. <code>"white"</code> or <code>"lightgoldenrodeyellow"</code>)</li>
+          <li>a string containing the hexadezimal RGB value of the color (e.g. <code>"#aaffaa"</code>)</li>
+          <li>one of the predefined colors from the <code>Color</code> enum (e.g. <code>Color.Red</code> or <code>Color.LightBlue</code>)</li>
+          </ul>
+          </li>
+          <li><code>speed</code>: a factor, with which the speed of a message is multiplied on a connection. <code>1.0</code> is normal speed, <code>0.5</code> is half speed and <code>2.0</code> is double the normal speed. Values less than or equal to 0 are ignored.</li>
+          </ul>
+          <h2>Functions</h2>
+          <p>These functions are available independently of the class.</p>
+          <h3><code>get_node_name(uuid)</code></h3>
+          <p>Returns the current name of the node identified by the UUID.</p>
+          <h3><code>get_time()</code></h3>
+          <p>Returns the current time since start of the simulation, in seconds.</p>
+          <h3><code>async sleep(seconds)</code></h3>
+          <p>With <code>await sleep(30)</code> the code may sleep for the specified number of seconds. The time may be given as a float, for instance <code>àwait sleep(0.5)</code>.</p>
+          <h2>Color</h2>
+          <p>The following list shows all the predefined colors within the <code>Color</code> enum:</p>
+          <ul>
+          <li>Color.Black</li>
+          <li>Color.White</li>
+          <li>Color.LightGray</li>
+          <li>Color.LightBlue</li>
+          <li>Color.LightCyan</li>
+          <li>Color.LightGreen</li>
+          <li>Color.LightYellow</li>
+          <li>Color.LightOrange</li>
+          <li>Color.LightRed</li>
+          <li>Color.LightMagenta</li>
+          <li>Color.LightPurple</li>
+          <li>Color.LightBrown</li>
+          <li>Color.Gray</li>
+          <li>Color.Blue</li>
+          <li>Color.Cyan</li>
+          <li>Color.Green</li>
+          <li>Color.Yellow</li>
+          <li>Color.Orange</li>
+          <li>Color.Red</li>
+          <li>Color.Magenta</li>
+          <li>Color.Purple</li>
+          <li>Color.Brown</li>
+          <li>Color.DarkGray</li>
+          <li>Color.DarkBlue</li>
+          <li>Color.DarkCyan</li>
+          <li>Color.DarkGreen</li>
+          <li>Color.DarkYellow</li>
+          <li>Color.DarkOrange</li>
+          <li>Color.DarkRed</li>
+          <li>Color.DarkMagenta</li>
+          <li>Color.DarkPurple</li>
+          <li>Color.DarkBrown</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
