@@ -17,7 +17,7 @@ Once the simulator has fully loaded, a sample graph will show up. You can intera
 
 To start the simulation, click on 'Start' in the header. Once the simulation is running, clicking on 'Pause'/'Continue' in the header will pause/resume he simulation. It's possible to interact with the messages during the simulation, for instance to inspect their content or deleting them. Changes in the code require restarting the simulation, by clicking on 'Reset' and then on 'Start' again.
 
-Using the 'Import' and 'Export' buttons in the header allows to load or save a scenario, which contains the network graph (nodes and connections) and the Python code. A collection of scenarios created in the context of the publication 'WNSWE: Web-based Network Simulator for Web Engineering Education' are available here: TODO Link
+Using the 'Import' and 'Export' buttons in the header allows to load or save a scenario, which contains the network graph (nodes and connections) and the Python code. A collection of scenarios created in the context of the publication 'WNSWE: Web-based Network Simulator for Web Engineering Education' are available here: [https://zenodo.org/records/13693453](https://zenodo.org/records/13693453)
 
 ## Used libraries
 
