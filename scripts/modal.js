@@ -98,8 +98,8 @@ export const modal = (function () {
 
   my.selectClass = function (className) {
     viewClass.setState(cm6.createEditorState(graph.getClassCode().get(className), textChangedClass))
-    applyClassCodeChange(className, graph.getClassCode().get(className))
     selectedClass = className
+    applyClassCodeChange(className, graph.getClassCode().get(className))
     classSelection.value = className
   }
 
