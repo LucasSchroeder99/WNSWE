@@ -2,6 +2,8 @@
 
 WNSWE is a purely client-side tool for simulating abstract networks of communicating nodes.
 
+[Try it here](https://vsr.informatik.tu-chemnitz.de/projects/2024/WNSWE/)
+
 ## Installation
 
 WNSWE requires minimal setup. Here's how to test it using Python's built-in web server. Any other web server that can serve static files will also work.
