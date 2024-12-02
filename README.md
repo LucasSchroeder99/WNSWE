@@ -25,3 +25,9 @@ Using the 'Import' and 'Export' buttons in the header allows to load or save a s
 - [CodeMirror](https://codemirror.net/)
 - [JSONEditor](https://github.com/josdejong/jsoneditor)
 - [Split.js](https://split.js.org/)
+
+## Citation
+
+To cite our work, please use the following reference:
+
+> Heil, S., Schröder, L., Gaedke, M. (2025). WNSWE: Web-Based Network Simulator for Web Engineering Education. In: Barhamgi, M., Wang, H., Wang, X. (eds) Web Information Systems Engineering – WISE 2024. WISE 2024. Lecture Notes in Computer Science, vol 15440. Springer, Singapore. https://doi.org/10.1007/978-981-96-0576-7_36 
